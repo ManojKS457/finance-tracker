@@ -26,22 +26,8 @@ def google_login():
         AUTHORIZATION_ENDPOINT
     )
 
-    st.markdown(
-        f'''
-        <a href="{authorization_url}" target="_self">
-            <button style="
-                background-color:#4285F4;
-                color:white;
-                border:none;
-                padding:12px 20px;
-                border-radius:10px;
-                cursor:pointer;
-                font-size:16px;
-                width:100%;
-            ">
-                Continue with Google
-            </button>
-        </a>
-        ''',
-        unsafe_allow_html=True
+    st.link_button(
+        "Continue with Google",
+        authorization_url,
+        use_container_width=True
     )
