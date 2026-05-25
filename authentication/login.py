@@ -1,6 +1,7 @@
 import streamlit as st
 from authentication.google_oauth import google_login
 
+
 def login_page():
 
     st.subheader("🔐 Login")
@@ -17,6 +18,10 @@ def login_page():
         if email == "admin@gmail.com" and password == "admin":
 
             st.session_state["logged_in"] = True
+
+            st.session_state["user_name"] = "Admin"
+
+            st.session_state["user_email"] = email
 
             st.success("Login Successful")
 
