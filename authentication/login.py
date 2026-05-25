@@ -1,4 +1,5 @@
 import streamlit as st
+from authentication.google_oauth import google_login
 
 def login_page():
 
@@ -17,6 +18,8 @@ def login_page():
 
             st.session_state["logged_in"] = True
 
+            st.session_state["user_email"] = email
+
             st.success("Login Successful")
 
             st.rerun()
@@ -24,3 +27,9 @@ def login_page():
         else:
 
             st.error("Invalid Credentials")
+
+    st.markdown("---")
+
+    st.subheader("OR")
+
+    google_login()
