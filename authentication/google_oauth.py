@@ -6,9 +6,7 @@ import os
 load_dotenv()
 
 GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
-
 GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
-
 REDIRECT_URI = os.getenv("REDIRECT_URI")
 
 AUTHORIZATION_ENDPOINT = "https://accounts.google.com/o/oauth2/auth"
@@ -29,13 +27,13 @@ def google_login():
 
     query_params = st.query_params
 
-    # ---------------- HANDLE CALLBACK ---------------- #
+    # ---------------- HANDLE GOOGLE CALLBACK ---------------- #
 
     if "code" in query_params:
 
-        code = query_params["code"]
-
         try:
+
+            code = query_params["code"]
 
             token = oauth.fetch_token(
                 TOKEN_ENDPOINT,
@@ -51,10 +49,17 @@ def google_login():
 
             st.session_state["logged_in"] = True
 
-            st.session_state["user_email"] = user_info.get("email")
+            st.session_state["user_name"] = user_info.get(
+                "name",
+                "Google User"
+            )
 
-            st.session_state["user_name"] = user_info.get("name")
+            st.session_state["user_email"] = user_info.get(
+                "email",
+                ""
+            )
 
+            # CLEAR URL PARAMETERS
             st.query_params.clear()
 
             st.rerun()
@@ -63,7 +68,7 @@ def google_login():
 
             st.error(f"Google Login Failed: {e}")
 
-    # ---------------- LOGIN BUTTON ---------------- #
+    # ---------------- GOOGLE BUTTON ---------------- #
 
     authorization_url, state = oauth.create_authorization_url(
         AUTHORIZATION_ENDPOINT
