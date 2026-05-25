@@ -12,7 +12,6 @@ REDIRECT_URI = os.getenv("REDIRECT_URI")
 
 AUTHORIZATION_ENDPOINT = "https://accounts.google.com/o/oauth2/auth"
 TOKEN_ENDPOINT = "https://oauth2.googleapis.com/token"
-
 USER_INFO_URL = "https://www.googleapis.com/oauth2/v1/userinfo"
 
 
@@ -27,8 +26,7 @@ def google_login():
 
     query_params = st.query_params
 
-    # ---------------- GOOGLE CALLBACK ---------------- #
-
+    # GOOGLE CALLBACK
     if "code" in query_params:
 
         try:
@@ -65,7 +63,6 @@ def google_login():
                 ""
             )
 
-            # REMOVE URL PARAMETERS
             st.query_params.clear()
 
             st.rerun()
@@ -73,8 +70,6 @@ def google_login():
         except Exception as e:
 
             st.error(f"Google Login Failed: {e}")
-
-    # ---------------- LOGIN BUTTON ---------------- #
 
     authorization_url, state = oauth.create_authorization_url(
         AUTHORIZATION_ENDPOINT
