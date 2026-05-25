@@ -1,72 +1,79 @@
 import streamlit as st
-from authlib.integrations.requests_client import OAuth2Session
-from dotenv import load_dotenv
-import os
 
-load_dotenv()
+from authentication.login import login_page
+from authentication.signup import signup_page
+from authentication.session_manager import initialize_session
 
-GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
-GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
-REDIRECT_URI = os.getenv("REDIRECT_URI")
+from frontend.sidebar import sidebar_menu
 
-AUTHORIZATION_ENDPOINT = "https://accounts.google.com/o/oauth2/auth"
+from dashboard.dashboard_home import show_dashboard
+from dashboard.analytics_dashboard import analytics_dashboard
 
-TOKEN_ENDPOINT = "https://oauth2.googleapis.com/token"
+from pages.add_income import add_income_page
+from pages.add_expense import add_expense_page
+from pages.budget_planner import budget_page
+from pages.expense_history import expense_history_page
+from pages.profile import profile_page
 
-USER_INFO = "https://www.googleapis.com/oauth2/v1/userinfo"
 
+st.set_page_config(
+    page_title="Finance Tracker",
+    page_icon="💰",
+    layout="wide"
+)
 
-def google_login():
+initialize_session()
 
-    oauth = OAuth2Session(
-        GOOGLE_CLIENT_ID,
-        GOOGLE_CLIENT_SECRET,
-        scope="openid email profile",
-        redirect_uri=REDIRECT_URI
+# ---------------- LOGIN PAGE ---------------- #
+
+if not st.session_state["logged_in"]:
+
+    st.title("💰 Smart Finance Tracker")
+
+    option = st.sidebar.selectbox(
+        "Select Option",
+        ["Login", "Signup"]
     )
 
-    query_params = st.query_params
+    if option == "Login":
+        login_page()
 
-    # ---------------- HANDLE CALLBACK ---------------- #
+    else:
+        signup_page()
 
-    if "code" in query_params:
+# ---------------- MAIN DASHBOARD ---------------- #
 
-        code = query_params["code"]
+else:
 
-        token = oauth.fetch_token(
-            TOKEN_ENDPOINT,
-            code=code
-        )
+    try:
 
-        response = oauth.get(
-            USER_INFO,
-            token=token
-        )
-
-        user_info = response.json()
-
-        st.session_state["logged_in"] = True
-
-        st.session_state["user_email"] = user_info.get("email")
-
-        st.session_state["user_name"] = user_info.get("name")
+        selected = sidebar_menu()
 
         st.success(
-            f"Welcome {user_info.get('name')}"
+            f"Welcome {st.session_state.get('user_name', 'User')}"
         )
 
-        st.query_params.clear()
+        if selected == "Dashboard":
+            show_dashboard()
 
-        st.rerun()
+        elif selected == "Add Income":
+            add_income_page()
 
-    # ---------------- SHOW LOGIN BUTTON ---------------- #
+        elif selected == "Add Expense":
+            add_expense_page()
 
-    authorization_url, state = oauth.create_authorization_url(
-        AUTHORIZATION_ENDPOINT
-    )
+        elif selected == "Budget Planner":
+            budget_page()
 
-    st.link_button(
-        "🔵 Continue with Google",
-        authorization_url,
-        use_container_width=True
-    )
+        elif selected == "Analytics":
+            analytics_dashboard()
+
+        elif selected == "Expense History":
+            expense_history_page()
+
+        elif selected == "Profile":
+            profile_page()
+
+    except Exception as e:
+
+        st.error(f"Dashboard Error: {e}")
