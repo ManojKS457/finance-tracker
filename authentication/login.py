@@ -18,8 +18,6 @@ def login_page():
 
             st.session_state["logged_in"] = True
 
-            st.session_state["user_email"] = email
-
             st.success("Login Successful")
 
             st.rerun()
