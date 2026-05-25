@@ -1,0 +1,11 @@
+date,type,category,amount
+2025-01-01,Income,Salary,50000
+2025-01-02,Expense,Food,1200
+2025-01-03,Expense,Shopping,3000
+2025-01-04,Expense,Transport,800
+2025-01-05,Income,Freelancing,10000
+2025-01-06,Expense,Bills,2500
+2025-01-07,Expense,EMI,15000
+2025-01-08,Expense,Medical,1200
+2025-01-09,Expense,Entertainment,2000
+2025-01-10,Income,Bonus,5000

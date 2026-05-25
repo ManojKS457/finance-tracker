@@ -1,0 +1,14 @@
+streamlit
+pandas
+numpy
+plotly
+matplotlib
+sqlalchemy
+bcrypt
+streamlit-option-menu
+streamlit-authenticator
+authlib
+google-auth
+google-auth-oauthlib
+python-dotenv
+openpyxl

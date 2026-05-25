@@ -1,0 +1,10 @@
+body {
+    background-color: #0f172a;
+    color: white;
+}
+
+.stButton button {
+    background-color: #2563eb;
+    color: white;
+    border-radius: 10px;
+}
