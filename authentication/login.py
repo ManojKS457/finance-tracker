@@ -28,6 +28,6 @@ def login_page():
 
     st.markdown("---")
 
-    st.subheader("OR")
+    st.subheader("Continue with Google")
 
     google_login()
