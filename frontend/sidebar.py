@@ -8,16 +8,15 @@ def sidebar_menu():
 
         st.markdown(
             """
-            <h2 style='color:#00BFFF;'>
+            <h1 style='color:#18c1ff;'>
             💰 Finance Tracker
-            </h2>
+            </h1>
             """,
             unsafe_allow_html=True
         )
 
         selected = option_menu(
             menu_title=None,
-
             options=[
                 "Dashboard",
                 "Add Income",
@@ -27,43 +26,71 @@ def sidebar_menu():
                 "Expense History",
                 "Profile"
             ],
-
             icons=[
-                "speedometer2",
+                "house-fill",
                 "cash-stack",
                 "credit-card",
-                "calculator",
-                "bar-chart",
+                "wallet2",
+                "bar-chart-fill",
                 "clock-history",
                 "person-circle"
             ],
-
+            menu_icon="cast",
             default_index=0,
-
             styles={
-
                 "container": {
-                    "padding": "5!important",
-                    "background-color": "#0E1117",
+                    "padding": "10px",
+                    "background-color": "#050816",
+                    "border-radius": "15px"
                 },
 
                 "icon": {
-                    "color": "#00BFFF",
-                    "font-size": "18px",
+                    "color": "#00c3ff",
+                    "font-size": "22px"
                 },
 
                 "nav-link": {
-                    "font-size": "16px",
+                    "font-size": "20px",
                     "text-align": "left",
-                    "margin": "5px",
-                    "--hover-color": "#262730",
+                    "margin": "8px",
+                    "--hover-color": "#111827",
+                    "color": "white",
+                    "border-radius": "10px"
                 },
 
                 "nav-link-selected": {
-                    "background-color": "#00BFFF",
+                    "background-color": "#18c1ff",
                     "color": "white",
-                },
+                    "font-weight": "bold"
+                }
             }
         )
+
+        st.divider()
+
+        st.markdown(
+            f"""
+            ### 👤 User
+            **{st.session_state.get('user_name', 'User')}**
+            """
+        )
+
+        st.markdown(
+            f"""
+            📧 {st.session_state.get('user_email', '')}
+            """
+        )
+
+        st.divider()
+
+        # LOGOUT BUTTON
+        if st.button(
+            "🚪 Logout",
+            use_container_width=True
+        ):
+
+            st.session_state.clear()
+
+            st.rerun()
 
     return selected
