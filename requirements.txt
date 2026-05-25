@@ -12,3 +12,8 @@ google-auth
 google-auth-oauthlib
 python-dotenv
 openpyxl
+streamlit-authenticator
+google-auth
+google-auth-oauthlib
+authlib
+extra-streamlit-components
