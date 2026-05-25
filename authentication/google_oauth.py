@@ -1,6 +1,7 @@
 import streamlit as st
 from authlib.integrations.requests_client import OAuth2Session
 from dotenv import load_dotenv
+import requests
 import os
 
 load_dotenv()
@@ -10,7 +11,6 @@ GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
 REDIRECT_URI = os.getenv("REDIRECT_URI")
 
 AUTHORIZATION_ENDPOINT = "https://accounts.google.com/o/oauth2/auth"
-
 TOKEN_ENDPOINT = "https://oauth2.googleapis.com/token"
 
 USER_INFO_URL = "https://www.googleapis.com/oauth2/v1/userinfo"
@@ -27,7 +27,7 @@ def google_login():
 
     query_params = st.query_params
 
-    # ---------------- HANDLE GOOGLE CALLBACK ---------------- #
+    # ---------------- GOOGLE CALLBACK ---------------- #
 
     if "code" in query_params:
 
@@ -40,9 +40,15 @@ def google_login():
                 code=code
             )
 
-            response = oauth.get(
+            access_token = token["access_token"]
+
+            headers = {
+                "Authorization": f"Bearer {access_token}"
+            }
+
+            response = requests.get(
                 USER_INFO_URL,
-                token=token
+                headers=headers
             )
 
             user_info = response.json()
@@ -59,7 +65,7 @@ def google_login():
                 ""
             )
 
-            # CLEAR URL PARAMETERS
+            # REMOVE URL PARAMETERS
             st.query_params.clear()
 
             st.rerun()
@@ -68,7 +74,7 @@ def google_login():
 
             st.error(f"Google Login Failed: {e}")
 
-    # ---------------- GOOGLE BUTTON ---------------- #
+    # ---------------- LOGIN BUTTON ---------------- #
 
     authorization_url, state = oauth.create_authorization_url(
         AUTHORIZATION_ENDPOINT
