@@ -100,10 +100,12 @@ with st.sidebar:
         unsafe_allow_html=True
     )
 
-    # USER CARD
-    st.markdown(f"""
+   # =========================
+# USER CARD
+# =========================
+st.sidebar.markdown(
+    f"""
     <div class="user-card">
-
         <div class="user-name">
             👤 {st.session_state.user_name}
         </div>
@@ -111,9 +113,10 @@ with st.sidebar:
         <div class="user-email">
             📧 {st.session_state.user_email}
         </div>
-
     </div>
-    """, unsafe_allow_html=True)
+    """,
+    unsafe_allow_html=True
+)
 
     st.markdown(
         '<div class="nav-title">Navigation</div>',
