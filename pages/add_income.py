@@ -1,49 +1,55 @@
 import streamlit as st
 import pandas as pd
-from datetime import datetime
+from datetime import date
+import os
+
 
 def add_income_page():
 
-    st.header("➕ Add Income")
+    st.title("💰 Add Income")
 
-    source = st.selectbox(
+    income = st.number_input(
+        "Enter Income",
+        min_value=0
+    )
+
+    category = st.selectbox(
         "Income Source",
         [
             "Salary",
             "Freelancing",
-            "Bonus",
-            "Investments"
+            "Business",
+            "Other"
         ]
-    )
-
-    amount = st.number_input(
-        "Amount",
-        min_value=0.0
     )
 
     if st.button("Add Income"):
 
         new_data = pd.DataFrame({
-
-            "date": [datetime.now().strftime("%Y-%m-%d")],
-            "type": ["Income"],
-            "category": [source],
-            "amount": [amount]
-
+            "date": [date.today()],
+            "income": [income],
+            "expense": [0],
+            "category": [category]
         })
 
-        df = pd.read_csv(
-            "dataset/personal_finance_dataset.csv"
-        )
+        file_path = "dataset/personal_finance_dataset.csv"
 
-        df = pd.concat(
-            [df, new_data],
-            ignore_index=True
-        )
+        if os.path.exists(file_path):
 
-        df.to_csv(
-            "dataset/personal_finance_dataset.csv",
+            old_df = pd.read_csv(file_path)
+
+            updated_df = pd.concat(
+                [old_df, new_data],
+                ignore_index=True
+            )
+
+        else:
+
+            updated_df = new_data
+
+        updated_df.to_csv(
+            file_path,
             index=False
         )
 
-        st.success("Income Added Successfully")
+        st.success("Income Added Successfully ✅")
