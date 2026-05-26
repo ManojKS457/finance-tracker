@@ -1,17 +1,17 @@
 import streamlit as st
 
-# ==========================================
+# =========================================
 # PAGE CONFIG
-# ==========================================
+# =========================================
 st.set_page_config(
     page_title="Finance Tracker",
     page_icon="💰",
     layout="wide"
 )
 
-# ==========================================
+# =========================================
 # SESSION STATE
-# ==========================================
+# =========================================
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = True
 
@@ -21,9 +21,9 @@ if "user_name" not in st.session_state:
 if "user_email" not in st.session_state:
     st.session_state.user_email = "manojdab10@gmail.com"
 
-# ==========================================
-# SIDEBAR CSS
-# ==========================================
+# =========================================
+# CUSTOM CSS
+# =========================================
 st.markdown("""
 <style>
 
@@ -36,15 +36,15 @@ section[data-testid="stSidebar"] {
     color: #00c6ff;
     font-size: 34px;
     font-weight: bold;
-    margin-bottom: 25px;
+    margin-bottom: 20px;
 }
 
 .user-card {
-    background: #111827;
+    background: #0f172a;
     padding: 20px;
     border-radius: 15px;
-    margin-top: 20px;
-    border: 1px solid #2d3748;
+    border: 1px solid #334155;
+    margin-bottom: 25px;
 }
 
 .user-name {
@@ -63,13 +63,12 @@ section[data-testid="stSidebar"] {
 .nav-title {
     color: #cbd5e1;
     font-size: 20px;
-    margin-top: 25px;
-    margin-bottom: 10px;
     font-weight: bold;
+    margin-bottom: 10px;
 }
 
 .stRadio > div {
-    gap: 12px;
+    gap: 10px;
 }
 
 .stButton > button {
@@ -87,12 +86,20 @@ section[data-testid="stSidebar"] {
     color: white;
 }
 
+.metric-card {
+    background-color: #111827;
+    padding: 20px;
+    border-radius: 15px;
+    text-align: center;
+    border: 1px solid #334155;
+}
+
 </style>
 """, unsafe_allow_html=True)
 
-# ==========================================
+# =========================================
 # SIDEBAR
-# ==========================================
+# =========================================
 with st.sidebar:
 
     st.markdown(
@@ -100,23 +107,23 @@ with st.sidebar:
         unsafe_allow_html=True
     )
 
-   # =========================
-# USER CARD
-# =========================
-st.sidebar.markdown(
-    f"""
-    <div class="user-card">
-        <div class="user-name">
-            👤 {st.session_state.user_name}
-        </div>
+    # USER CARD
+    st.sidebar.markdown(
+        f"""
+        <div class="user-card">
 
-        <div class="user-email">
-            📧 {st.session_state.user_email}
+            <div class="user-name">
+                👤 {st.session_state.user_name}
+            </div>
+
+            <div class="user-email">
+                📧 {st.session_state.user_email}
+            </div>
+
         </div>
-    </div>
-    """,
-    unsafe_allow_html=True
-)
+        """,
+        unsafe_allow_html=True
+    )
 
     st.markdown(
         '<div class="nav-title">Navigation</div>',
@@ -138,74 +145,131 @@ st.sidebar.markdown(
 
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # LOGOUT BUTTON
     if st.button("🚪 Logout"):
         st.session_state.clear()
         st.rerun()
 
-# ==========================================
-# MAIN DASHBOARD
-# ==========================================
+# =========================================
+# MAIN CONTENT
+# =========================================
 st.title("📊 Finance Dashboard")
 
 st.success(f"Welcome {st.session_state.user_name}")
 
-col1, col2, col3, col4 = st.columns(4)
-
-with col1:
-    st.metric("💰 Total Income", "₹0")
-
-with col2:
-    st.metric("💸 Total Expense", "₹0")
-
-with col3:
-    st.metric("🏦 Savings", "₹0")
-
-with col4:
-    st.metric("🏠 EMI", "₹0")
-
-st.divider()
-
+# =========================================
+# DASHBOARD
+# =========================================
 if page == "Dashboard":
-    st.subheader("Dashboard")
-    st.info("No financial data available yet.")
 
+    col1, col2, col3, col4 = st.columns(4)
+
+    with col1:
+        st.metric("💰 Total Income", "₹0")
+
+    with col2:
+        st.metric("💸 Total Expense", "₹0")
+
+    with col3:
+        st.metric("🏦 Savings", "₹0")
+
+    with col4:
+        st.metric("🏠 EMI", "₹0")
+
+    st.divider()
+
+    st.subheader("📈 Expense Distribution")
+
+    st.info("No financial data available yet. Add income and expenses to see analytics.")
+
+# =========================================
+# ADD INCOME
+# =========================================
 elif page == "Add Income":
-    st.subheader("Add Income")
+
+    st.header("💰 Add Income")
 
     source = st.text_input("Income Source")
-    amount = st.number_input("Amount", min_value=0)
+
+    amount = st.number_input(
+        "Amount",
+        min_value=0
+    )
+
+    date = st.date_input("Date")
 
     if st.button("Add Income"):
+
         st.success("Income Added Successfully")
 
+# =========================================
+# ADD EXPENSE
+# =========================================
 elif page == "Add Expense":
-    st.subheader("Add Expense")
+
+    st.header("💸 Add Expense")
 
     category = st.selectbox(
         "Category",
-        ["Food", "Transport", "Shopping", "Bills"]
+        [
+            "Food",
+            "Transport",
+            "Shopping",
+            "Bills",
+            "Medical"
+        ]
     )
 
-    amount = st.number_input("Expense Amount", min_value=0)
+    amount = st.number_input(
+        "Expense Amount",
+        min_value=0
+    )
+
+    date = st.date_input("Expense Date")
 
     if st.button("Add Expense"):
+
         st.success("Expense Added Successfully")
 
+# =========================================
+# BUDGET PLANNER
+# =========================================
 elif page == "Budget Planner":
-    st.subheader("Budget Planner")
-    st.info("Budget Planner Coming Soon")
 
+    st.header("📋 Budget Planner")
+
+    monthly_budget = st.number_input(
+        "Enter Monthly Budget",
+        min_value=0
+    )
+
+    if st.button("Save Budget"):
+
+        st.success("Budget Saved Successfully")
+
+# =========================================
+# ANALYTICS
+# =========================================
 elif page == "Analytics":
-    st.subheader("Analytics")
-    st.info("Analytics Coming Soon")
 
+    st.header("📊 Analytics")
+
+    st.info("Analytics will appear after adding data.")
+
+# =========================================
+# EXPENSE HISTORY
+# =========================================
 elif page == "Expense History":
-    st.subheader("Expense History")
-    st.info("No Expense History Available")
 
+    st.header("🕒 Expense History")
+
+    st.info("No expense history available.")
+
+# =========================================
+# PROFILE
+# =========================================
 elif page == "Profile":
-    st.subheader("Profile")
+
+    st.header("👤 User Profile")
 
     st.write("### Name")
     st.write(st.session_state.user_name)
