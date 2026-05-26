@@ -1,35 +1,39 @@
 import streamlit as st
 import pandas as pd
-from datetime import date
 import os
 
+# =========================
+# ADD EXPENSE FUNCTION
+# =========================
+def show_add_expense():
 
-def add_expense_page():
-
-    st.title("💸 Add Expense")
+    st.markdown("# 💸 Add Expense")
 
     expense = st.number_input(
-        "Enter Expense",
-        min_value=0
+        "Enter Expense Amount",
+        min_value=0.0,
+        step=100.0
     )
 
     category = st.selectbox(
-        "Expense Category",
+        "Select Category",
         [
             "Food",
             "Shopping",
             "Bills",
-            "EMI",
-            "Medical",
             "Transport",
-            "Entertainment"
+            "Medical",
+            "Entertainment",
+            "EMI"
         ]
     )
 
     if st.button("Add Expense"):
 
+        # =========================
+        # CREATE DATAFRAME
+        # =========================
         new_data = pd.DataFrame({
-            "date": [date.today()],
             "income": [0],
             "expense": [expense],
             "category": [category]
@@ -37,22 +41,28 @@ def add_expense_page():
 
         file_path = "dataset/personal_finance_dataset.csv"
 
-        if os.path.exists(file_path):
+        # =========================
+        # CREATE FILE IF NOT EXISTS
+        # =========================
+        if not os.path.exists(file_path):
 
-            old_df = pd.read_csv(file_path)
-
-            updated_df = pd.concat(
-                [old_df, new_data],
-                ignore_index=True
+            new_data.to_csv(
+                file_path,
+                index=False
             )
 
         else:
 
-            updated_df = new_data
+            new_data.to_csv(
+                file_path,
+                mode="a",
+                header=False,
+                index=False
+            )
 
-        updated_df.to_csv(
-            file_path,
-            index=False
-        )
+        # =========================
+        # ENABLE DASHBOARD DATA
+        # =========================
+        st.session_state.data_initialized = True
 
         st.success("Expense Added Successfully ✅")
