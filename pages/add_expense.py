@@ -1,52 +1,58 @@
 import streamlit as st
 import pandas as pd
-from datetime import datetime
+from datetime import date
+import os
+
 
 def add_expense_page():
 
-    st.header("➖ Add Expense")
+    st.title("💸 Add Expense")
+
+    expense = st.number_input(
+        "Enter Expense",
+        min_value=0
+    )
 
     category = st.selectbox(
         "Expense Category",
         [
             "Food",
             "Shopping",
-            "Transport",
             "Bills",
             "EMI",
             "Medical",
+            "Transport",
             "Entertainment"
         ]
-    )
-
-    amount = st.number_input(
-        "Amount",
-        min_value=0.0
     )
 
     if st.button("Add Expense"):
 
         new_data = pd.DataFrame({
-
-            "date": [datetime.now().strftime("%Y-%m-%d")],
-            "type": ["Expense"],
-            "category": [category],
-            "amount": [amount]
-
+            "date": [date.today()],
+            "income": [0],
+            "expense": [expense],
+            "category": [category]
         })
 
-        df = pd.read_csv(
-            "dataset/personal_finance_dataset.csv"
-        )
+        file_path = "dataset/personal_finance_dataset.csv"
 
-        df = pd.concat(
-            [df, new_data],
-            ignore_index=True
-        )
+        if os.path.exists(file_path):
 
-        df.to_csv(
-            "dataset/personal_finance_dataset.csv",
+            old_df = pd.read_csv(file_path)
+
+            updated_df = pd.concat(
+                [old_df, new_data],
+                ignore_index=True
+            )
+
+        else:
+
+            updated_df = new_data
+
+        updated_df.to_csv(
+            file_path,
             index=False
         )
 
-        st.success("Expense Added Successfully")
+        st.success("Expense Added Successfully ✅")
