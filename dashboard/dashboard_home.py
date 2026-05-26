@@ -1,117 +1,122 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+import os
 
 
-def show_dashboard():
+def dashboard_page():
 
     st.title("📊 Finance Dashboard")
 
-    try:
+    file_path = "dataset/personal_finance_dataset.csv"
 
-        df = pd.read_csv(
-            "dataset/personal_finance_dataset.csv"
-        )
+    # CHECK IF FILE EXISTS
+    if not os.path.exists(file_path):
 
-        total_income = df["income"].sum()
+        st.warning("No financial data available yet.")
 
-        total_expense = df["expense"].sum()
+        return
 
-        savings = total_income - total_expense
+    # READ DATA
+    df = pd.read_csv(file_path)
 
-        emi_total = df[df["category"] == "EMI"]["expense"].sum()
+    # HANDLE EMPTY DATASET
+    if df.empty:
 
-        # KPI CARDS
-        col1, col2, col3, col4 = st.columns(4)
+        st.warning("No financial data available yet.")
 
-        col1.metric(
+        return
+
+    # FIX MISSING COLUMNS
+    if "income" not in df.columns:
+        df["income"] = 0
+
+    if "expense" not in df.columns:
+        df["expense"] = 0
+
+    if "category" not in df.columns:
+        df["category"] = "Other"
+
+    # CONVERT TO NUMERIC
+    df["income"] = pd.to_numeric(
+        df["income"],
+        errors="coerce"
+    ).fillna(0)
+
+    df["expense"] = pd.to_numeric(
+        df["expense"],
+        errors="coerce"
+    ).fillna(0)
+
+    # CALCULATIONS
+    total_income = df["income"].sum()
+
+    total_expense = df["expense"].sum()
+
+    savings = total_income - total_expense
+
+    emi_total = df[
+        df["category"] == "EMI"
+    ]["expense"].sum()
+
+    # METRICS
+    col1, col2, col3, col4 = st.columns(4)
+
+    with col1:
+        st.metric(
             "💰 Total Income",
             f"₹{total_income:,.0f}"
         )
 
-        col2.metric(
+    with col2:
+        st.metric(
             "💸 Total Expense",
             f"₹{total_expense:,.0f}"
         )
 
-        col3.metric(
+    with col3:
+        st.metric(
             "🏦 Savings",
             f"₹{savings:,.0f}"
         )
 
-        col4.metric(
+    with col4:
+        st.metric(
             "🏠 EMI",
             f"₹{emi_total:,.0f}"
         )
 
-        st.divider()
+    st.divider()
 
-        # PIE CHART
+    # EXPENSE DISTRIBUTION
+    expense_df = df[df["expense"] > 0]
+
+    if not expense_df.empty:
+
         st.subheader("Expense Distribution")
 
-        expense_category = (
-            df.groupby("category")["expense"]
+        category_expense = (
+            expense_df.groupby("category")["expense"]
             .sum()
             .reset_index()
         )
 
-        pie_fig = px.pie(
-            expense_category,
-            values="expense",
+        fig = px.pie(
+            category_expense,
             names="category",
-            hole=0.4
+            values="expense",
+            hole=0.5
         )
 
         st.plotly_chart(
-            pie_fig,
+            fig,
             use_container_width=True
         )
 
-        # LINE CHART
-        st.subheader("Income vs Expense")
+    # RECENT TRANSACTIONS
+    st.subheader("Recent Transactions")
 
-        line_fig = px.line(
-            df,
-            x="date",
-            y=["income", "expense"],
-            markers=True
-        )
-
-        st.plotly_chart(
-            line_fig,
-            use_container_width=True
-        )
-
-        # BAR CHART
-        st.subheader("Expenses by Category")
-
-        bar_fig = px.bar(
-            expense_category,
-            x="category",
-            y="expense",
-            color="category"
-        )
-
-        st.plotly_chart(
-            bar_fig,
-            use_container_width=True
-        )
-
-        # ALERTS
-        monthly_limit = 50000
-
-        if total_expense > monthly_limit:
-
-            st.error(
-                "⚠️ Monthly Expense Limit Exceeded!"
-            )
-
-        else:
-
-            st.success(
-                "✅ Expenses are within limit"
-            )
-
-    except Exception as e:
-
-        st.error(f"Dashboard Error: {e}")
+    st.dataframe(
+        df.tail(10),
+        use_container_width=True
+    )
