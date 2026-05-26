@@ -1,28 +1,17 @@
 import streamlit as st
 
-# =========================
+# ==========================================
 # PAGE CONFIG
-# =========================
+# ==========================================
 st.set_page_config(
-    page_title="Smart Finance Tracker",
+    page_title="Finance Tracker",
     page_icon="💰",
-    layout="wide",
-    initial_sidebar_state="expanded"
+    layout="wide"
 )
 
-# =========================
-# IMPORT PAGES
-# =========================
-from dashboard.dashboard_home import show_dashboard
-from pages.add_income import show_add_income
-from pages.add_expense import show_add_expense
-
-# =========================
+# ==========================================
 # SESSION STATE
-# =========================
-if "page" not in st.session_state:
-    st.session_state.page = "Dashboard"
-
+# ==========================================
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = True
 
@@ -32,9 +21,9 @@ if "user_name" not in st.session_state:
 if "user_email" not in st.session_state:
     st.session_state.user_email = "manojdab10@gmail.com"
 
-# =========================
-# CUSTOM CSS
-# =========================
+# ==========================================
+# SIDEBAR CSS
+# ==========================================
 st.markdown("""
 <style>
 
@@ -45,28 +34,52 @@ section[data-testid="stSidebar"] {
 
 .sidebar-title {
     color: #00c6ff;
-    font-size: 32px;
+    font-size: 34px;
     font-weight: bold;
-    margin-bottom: 30px;
+    margin-bottom: 25px;
 }
 
-.menu-container {
-    background: #050816;
+.user-card {
+    background: #111827;
     padding: 20px;
     border-radius: 15px;
     margin-top: 20px;
+    border: 1px solid #2d3748;
+}
+
+.user-name {
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.user-email {
+    color: #cbd5e1;
+    font-size: 16px;
+    margin-top: 10px;
+    word-break: break-word;
+}
+
+.nav-title {
+    color: #cbd5e1;
+    font-size: 20px;
+    margin-top: 25px;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+.stRadio > div {
+    gap: 12px;
 }
 
 .stButton > button {
     width: 100%;
-    background-color: transparent;
+    background-color: #0f172a;
     color: white;
-    border: none;
-    padding: 15px;
-    text-align: left;
-    font-size: 20px;
+    border: 1px solid #334155;
+    padding: 12px;
     border-radius: 10px;
-    margin-bottom: 10px;
+    font-size: 18px;
 }
 
 .stButton > button:hover {
@@ -74,143 +87,125 @@ section[data-testid="stSidebar"] {
     color: white;
 }
 
-.active-btn {
-    background-color: #0ea5e9 !important;
-    color: white !important;
-}
-
-.user-card {
-    background: #111827;
-    padding: 20px;
-    border-radius: 15px;
-    margin-top: 25px;
-    border: 1px solid #2d3748;
-}
-
-.user-name {
-    color: white;
-    font-size: 22px;
-    font-weight: bold;
-}
-
-.user-email {
-    color: #9ca3af;
-    font-size: 15px;
-}
-
 </style>
 """, unsafe_allow_html=True)
 
-# =========================
-# SIDEBAR TITLE
-# =========================
-st.sidebar.markdown(
-    """
-    <div class="sidebar-title">
-    💰 Finance Tracker
-    </div>
-    """,
-    unsafe_allow_html=True
-)
+# ==========================================
+# SIDEBAR
+# ==========================================
+with st.sidebar:
 
-# =========================
-# MENU CARD
-# =========================
-st.sidebar.markdown('<div class="menu-container">', unsafe_allow_html=True)
+    st.markdown(
+        '<div class="sidebar-title">💰 Finance Tracker</div>',
+        unsafe_allow_html=True
+    )
 
-if st.sidebar.button("📊 Dashboard"):
-    st.session_state.page = "Dashboard"
-
-if st.sidebar.button("💵 Add Income"):
-    st.session_state.page = "Add Income"
-
-if st.sidebar.button("💳 Add Expense"):
-    st.session_state.page = "Add Expense"
-
-if st.sidebar.button("🧮 Budget Planner"):
-    st.session_state.page = "Budget Planner"
-
-if st.sidebar.button("📈 Analytics"):
-    st.session_state.page = "Analytics"
-
-if st.sidebar.button("🕒 Expense History"):
-    st.session_state.page = "Expense History"
-
-if st.sidebar.button("👤 Profile"):
-    st.session_state.page = "Profile"
-
-st.sidebar.markdown('</div>', unsafe_allow_html=True)
-
-# =========================
-# USER CARD
-# =========================
-st.sidebar.markdown(
-    f"""
+    # USER CARD
+    st.markdown(f"""
     <div class="user-card">
 
         <div class="user-name">
             👤 {st.session_state.user_name}
         </div>
 
-        <div style="margin-top:10px;" class="user-email">
+        <div class="user-email">
             📧 {st.session_state.user_email}
         </div>
 
     </div>
-    """,
-    unsafe_allow_html=True
-)
+    """, unsafe_allow_html=True)
 
-# =========================
-# LOGOUT BUTTON
-# =========================
-if st.sidebar.button("🚪 Logout"):
+    st.markdown(
+        '<div class="nav-title">Navigation</div>',
+        unsafe_allow_html=True
+    )
 
-    st.session_state.clear()
+    page = st.radio(
+        "",
+        [
+            "Dashboard",
+            "Add Income",
+            "Add Expense",
+            "Budget Planner",
+            "Analytics",
+            "Expense History",
+            "Profile"
+        ]
+    )
 
-    st.rerun()
+    st.markdown("<br>", unsafe_allow_html=True)
 
-# =========================
-# PAGE ROUTING
-# =========================
-page = st.session_state.page
+    # LOGOUT BUTTON
+    if st.button("🚪 Logout"):
+        st.session_state.clear()
+        st.rerun()
+
+# ==========================================
+# MAIN DASHBOARD
+# ==========================================
+st.title("📊 Finance Dashboard")
+
+st.success(f"Welcome {st.session_state.user_name}")
+
+col1, col2, col3, col4 = st.columns(4)
+
+with col1:
+    st.metric("💰 Total Income", "₹0")
+
+with col2:
+    st.metric("💸 Total Expense", "₹0")
+
+with col3:
+    st.metric("🏦 Savings", "₹0")
+
+with col4:
+    st.metric("🏠 EMI", "₹0")
+
+st.divider()
 
 if page == "Dashboard":
-
-    st.success(f"Welcome {st.session_state.user_name}")
-
-    show_dashboard()
+    st.subheader("Dashboard")
+    st.info("No financial data available yet.")
 
 elif page == "Add Income":
+    st.subheader("Add Income")
 
-    show_add_income()
+    source = st.text_input("Income Source")
+    amount = st.number_input("Amount", min_value=0)
+
+    if st.button("Add Income"):
+        st.success("Income Added Successfully")
 
 elif page == "Add Expense":
+    st.subheader("Add Expense")
 
-    show_add_expense()
+    category = st.selectbox(
+        "Category",
+        ["Food", "Transport", "Shopping", "Bills"]
+    )
+
+    amount = st.number_input("Expense Amount", min_value=0)
+
+    if st.button("Add Expense"):
+        st.success("Expense Added Successfully")
 
 elif page == "Budget Planner":
-
-    st.title("🧮 Budget Planner")
-
-    st.info("Budget Planner Page")
+    st.subheader("Budget Planner")
+    st.info("Budget Planner Coming Soon")
 
 elif page == "Analytics":
-
-    st.title("📈 Analytics")
-
-    st.info("Analytics Page")
+    st.subheader("Analytics")
+    st.info("Analytics Coming Soon")
 
 elif page == "Expense History":
-
-    st.title("🕒 Expense History")
-
-    st.info("Expense History Page")
+    st.subheader("Expense History")
+    st.info("No Expense History Available")
 
 elif page == "Profile":
+    st.subheader("Profile")
 
-    st.title("👤 Profile")
+    st.write("### Name")
+    st.write(st.session_state.user_name)
 
-    st.write("Name:", st.session_state.user_name)
-
-    st.write("Email:", st.session_state.user_email)
+    st.write("### Email")
+    st.write(st.session_state.user_email)
