@@ -44,7 +44,7 @@ section[data-testid="stSidebar"] {
     font-size: 34px;
     font-weight: bold;
     color: #00c6ff;
-    margin-bottom: 20px;
+    margin-bottom: 25px;
 }
 
 .user-card {
@@ -57,7 +57,7 @@ section[data-testid="stSidebar"] {
 
 .user-name {
     color: white;
-    font-size: 22px;
+    font-size: 24px;
     font-weight: bold;
 }
 
@@ -66,17 +66,11 @@ section[data-testid="stSidebar"] {
     font-size: 15px;
 }
 
-.main-title {
-    font-size: 50px;
-    font-weight: bold;
-    color: white;
-}
-
 </style>
 """, unsafe_allow_html=True)
 
 # =========================
-# SIDEBAR HEADER
+# SIDEBAR TITLE
 # =========================
 st.sidebar.markdown(
     """
@@ -88,20 +82,20 @@ st.sidebar.markdown(
 )
 
 # =========================
-# USER CARD AT TOP
+# USER CARD
 # =========================
 st.sidebar.markdown(
     f"""
     <div class="user-card">
+
         <div class="user-name">
             👤 {st.session_state.user_name}
         </div>
 
-        <br>
-
-        <div class="user-email">
+        <div style="margin-top:10px;" class="user-email">
             📧 {st.session_state.user_email}
         </div>
+
     </div>
     """,
     unsafe_allow_html=True
