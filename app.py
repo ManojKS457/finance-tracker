@@ -6,7 +6,8 @@ import streamlit as st
 st.set_page_config(
     page_title="Smart Finance Tracker",
     page_icon="💰",
-    layout="wide"
+    layout="wide",
+    initial_sidebar_state="expanded"
 )
 
 # =========================
@@ -25,20 +26,92 @@ if "logged_in" not in st.session_state:
 if "user_name" not in st.session_state:
     st.session_state.user_name = "Manoj KS"
 
+if "user_email" not in st.session_state:
+    st.session_state.user_email = "manojdab10@gmail.com"
+
 # =========================
-# SIDEBAR
+# CUSTOM CSS
+# =========================
+st.markdown("""
+<style>
+
+section[data-testid="stSidebar"] {
+    background-color: #1e1e2f;
+    width: 320px !important;
+}
+
+.sidebar-title {
+    font-size: 34px;
+    font-weight: bold;
+    color: #00c6ff;
+    margin-bottom: 20px;
+}
+
+.user-card {
+    background: #111827;
+    padding: 20px;
+    border-radius: 15px;
+    margin-bottom: 25px;
+    border: 1px solid #2d3748;
+}
+
+.user-name {
+    color: white;
+    font-size: 22px;
+    font-weight: bold;
+}
+
+.user-email {
+    color: #9ca3af;
+    font-size: 15px;
+}
+
+.main-title {
+    font-size: 50px;
+    font-weight: bold;
+    color: white;
+}
+
+</style>
+""", unsafe_allow_html=True)
+
+# =========================
+# SIDEBAR HEADER
 # =========================
 st.sidebar.markdown(
     """
-    # 💰 Finance Tracker
-    """
+    <div class="sidebar-title">
+    💰 Finance Tracker
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
+# =========================
+# USER CARD AT TOP
+# =========================
+st.sidebar.markdown(
+    f"""
+    <div class="user-card">
+        <div class="user-name">
+            👤 {st.session_state.user_name}
+        </div>
+
+        <br>
+
+        <div class="user-email">
+            📧 {st.session_state.user_email}
+        </div>
+    </div>
+    """,
+    unsafe_allow_html=True
 )
 
 # =========================
 # MENU
 # =========================
 menu = st.sidebar.radio(
-    "Select Option",
+    "Navigation",
     [
         "Dashboard",
         "Add Income",
@@ -51,17 +124,10 @@ menu = st.sidebar.radio(
 )
 
 # =========================
-# USER SECTION
+# LOGOUT
 # =========================
 st.sidebar.markdown("---")
 
-st.sidebar.markdown("## 👤 User")
-
-st.sidebar.write(st.session_state.user_name)
-
-# =========================
-# LOGOUT BUTTON
-# =========================
 if st.sidebar.button("🚪 Logout"):
 
     st.session_state.clear()
@@ -69,7 +135,7 @@ if st.sidebar.button("🚪 Logout"):
     st.rerun()
 
 # =========================
-# PAGE ROUTING
+# ROUTING
 # =========================
 if menu == "Dashboard":
 
@@ -108,3 +174,5 @@ elif menu == "Profile":
     st.title("👤 Profile")
 
     st.write("Name:", st.session_state.user_name)
+
+    st.write("Email:", st.session_state.user_email)
