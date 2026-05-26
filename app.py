@@ -20,6 +20,9 @@ from pages.add_expense import show_add_expense
 # =========================
 # SESSION STATE
 # =========================
+if "page" not in st.session_state:
+    st.session_state.page = "Dashboard"
+
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = True
 
@@ -41,23 +44,52 @@ section[data-testid="stSidebar"] {
 }
 
 .sidebar-title {
-    font-size: 34px;
-    font-weight: bold;
     color: #00c6ff;
-    margin-bottom: 25px;
+    font-size: 32px;
+    font-weight: bold;
+    margin-bottom: 30px;
+}
+
+.menu-container {
+    background: #050816;
+    padding: 20px;
+    border-radius: 15px;
+    margin-top: 20px;
+}
+
+.stButton > button {
+    width: 100%;
+    background-color: transparent;
+    color: white;
+    border: none;
+    padding: 15px;
+    text-align: left;
+    font-size: 20px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+
+.stButton > button:hover {
+    background-color: #0ea5e9;
+    color: white;
+}
+
+.active-btn {
+    background-color: #0ea5e9 !important;
+    color: white !important;
 }
 
 .user-card {
     background: #111827;
     padding: 20px;
     border-radius: 15px;
-    margin-bottom: 25px;
+    margin-top: 25px;
     border: 1px solid #2d3748;
 }
 
 .user-name {
     color: white;
-    font-size: 24px;
+    font-size: 22px;
     font-weight: bold;
 }
 
@@ -82,6 +114,34 @@ st.sidebar.markdown(
 )
 
 # =========================
+# MENU CARD
+# =========================
+st.sidebar.markdown('<div class="menu-container">', unsafe_allow_html=True)
+
+if st.sidebar.button("📊 Dashboard"):
+    st.session_state.page = "Dashboard"
+
+if st.sidebar.button("💵 Add Income"):
+    st.session_state.page = "Add Income"
+
+if st.sidebar.button("💳 Add Expense"):
+    st.session_state.page = "Add Expense"
+
+if st.sidebar.button("🧮 Budget Planner"):
+    st.session_state.page = "Budget Planner"
+
+if st.sidebar.button("📈 Analytics"):
+    st.session_state.page = "Analytics"
+
+if st.sidebar.button("🕒 Expense History"):
+    st.session_state.page = "Expense History"
+
+if st.sidebar.button("👤 Profile"):
+    st.session_state.page = "Profile"
+
+st.sidebar.markdown('</div>', unsafe_allow_html=True)
+
+# =========================
 # USER CARD
 # =========================
 st.sidebar.markdown(
@@ -102,26 +162,8 @@ st.sidebar.markdown(
 )
 
 # =========================
-# MENU
+# LOGOUT BUTTON
 # =========================
-menu = st.sidebar.radio(
-    "Navigation",
-    [
-        "Dashboard",
-        "Add Income",
-        "Add Expense",
-        "Budget Planner",
-        "Analytics",
-        "Expense History",
-        "Profile"
-    ]
-)
-
-# =========================
-# LOGOUT
-# =========================
-st.sidebar.markdown("---")
-
 if st.sidebar.button("🚪 Logout"):
 
     st.session_state.clear()
@@ -129,41 +171,43 @@ if st.sidebar.button("🚪 Logout"):
     st.rerun()
 
 # =========================
-# ROUTING
+# PAGE ROUTING
 # =========================
-if menu == "Dashboard":
+page = st.session_state.page
+
+if page == "Dashboard":
 
     st.success(f"Welcome {st.session_state.user_name}")
 
     show_dashboard()
 
-elif menu == "Add Income":
+elif page == "Add Income":
 
     show_add_income()
 
-elif menu == "Add Expense":
+elif page == "Add Expense":
 
     show_add_expense()
 
-elif menu == "Budget Planner":
+elif page == "Budget Planner":
 
-    st.title("📋 Budget Planner")
+    st.title("🧮 Budget Planner")
 
     st.info("Budget Planner Page")
 
-elif menu == "Analytics":
+elif page == "Analytics":
 
-    st.title("📊 Analytics")
+    st.title("📈 Analytics")
 
     st.info("Analytics Page")
 
-elif menu == "Expense History":
+elif page == "Expense History":
 
-    st.title("📜 Expense History")
+    st.title("🕒 Expense History")
 
     st.info("Expense History Page")
 
-elif menu == "Profile":
+elif page == "Profile":
 
     st.title("👤 Profile")
 
