@@ -29,6 +29,19 @@ def show_dashboard():
     df = pd.read_csv(csv_file)
 
     # =========================
+    # CONVERT TO NUMERIC
+    # =========================
+    df["income"] = pd.to_numeric(
+        df["income"],
+        errors="coerce"
+    ).fillna(0)
+
+    df["expense"] = pd.to_numeric(
+        df["expense"],
+        errors="coerce"
+    ).fillna(0)
+
+    # =========================
     # FIRST TIME EMPTY DASHBOARD
     # =========================
     if "data_initialized" not in st.session_state:
@@ -74,10 +87,6 @@ def show_dashboard():
         emi = 0
 
     else:
-
-        # Fill missing values
-        df["income"] = df["income"].fillna(0)
-        df["expense"] = df["expense"].fillna(0)
 
         total_income = df["income"].sum()
 
