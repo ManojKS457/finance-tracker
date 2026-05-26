@@ -1,55 +1,59 @@
 import streamlit as st
 import pandas as pd
-from datetime import date
 import os
 
+# =========================
+# ADD INCOME FUNCTION
+# =========================
+def show_add_income():
 
-def add_income_page():
-
-    st.title("💰 Add Income")
+    st.markdown("# 💰 Add Income")
 
     income = st.number_input(
-        "Enter Income",
-        min_value=0
+        "Enter Income Amount",
+        min_value=0.0,
+        step=100.0
     )
 
-    category = st.selectbox(
-        "Income Source",
-        [
-            "Salary",
-            "Freelancing",
-            "Business",
-            "Other"
-        ]
+    source = st.text_input(
+        "Income Source"
     )
 
     if st.button("Add Income"):
 
+        # =========================
+        # CREATE DATAFRAME
+        # =========================
         new_data = pd.DataFrame({
-            "date": [date.today()],
             "income": [income],
             "expense": [0],
-            "category": [category]
+            "category": [source]
         })
 
         file_path = "dataset/personal_finance_dataset.csv"
 
-        if os.path.exists(file_path):
+        # =========================
+        # CREATE FILE IF NOT EXISTS
+        # =========================
+        if not os.path.exists(file_path):
 
-            old_df = pd.read_csv(file_path)
-
-            updated_df = pd.concat(
-                [old_df, new_data],
-                ignore_index=True
+            new_data.to_csv(
+                file_path,
+                index=False
             )
 
         else:
 
-            updated_df = new_data
+            new_data.to_csv(
+                file_path,
+                mode="a",
+                header=False,
+                index=False
+            )
 
-        updated_df.to_csv(
-            file_path,
-            index=False
-        )
+        # =========================
+        # ENABLE DASHBOARD DATA
+        # =========================
+        st.session_state.data_initialized = True
 
         st.success("Income Added Successfully ✅")
