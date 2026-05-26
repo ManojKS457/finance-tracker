@@ -1,118 +1,139 @@
 import streamlit as st
+import pandas as pd
+import plotly.express as px
 
-# ---------------- PAGE CONFIG ----------------
+# =========================================
+# PAGE CONFIG
+# =========================================
 st.set_page_config(
-    page_title="Finance Tracker",
+    page_title="Smart Finance Tracker",
     page_icon="💰",
     layout="wide"
 )
 
-# ---------------- CUSTOM CSS ----------------
+# =========================================
+# SESSION STATE
+# =========================================
+if "logged_in" not in st.session_state:
+    st.session_state.logged_in = True
+
+if "user_name" not in st.session_state:
+    st.session_state.user_name = "Manoj KS"
+
+if "user_email" not in st.session_state:
+    st.session_state.user_email = "manojdab10@gmail.com"
+
+if "income_data" not in st.session_state:
+    st.session_state.income_data = []
+
+if "expense_data" not in st.session_state:
+    st.session_state.expense_data = []
+
+# =========================================
+# CUSTOM CSS
+# =========================================
 st.markdown("""
 <style>
 
-/* Main Background */
-.stApp {
-    background: linear-gradient(135deg, #0f172a, #1e1b4b);
-    color: white;
-}
-
-/* Sidebar */
 section[data-testid="stSidebar"] {
-    background: #0b1120;
-    border-right: 1px solid #1e293b;
+    background-color: #1e1e2f;
+    width: 320px !important;
 }
 
-/* App Title */
-.app-title {
-    font-size: 42px;
-    font-weight: 800;
-    color: #38bdf8;
-    margin-bottom: 25px;
-}
-
-/* Profile Card */
-.profile-container {
-    background: #071739;
-    padding: 20px;
-    border-radius: 18px;
-    border: 1px solid #1e3a5f;
-    margin-bottom: 30px;
-}
-
-/* User Name */
-.user-name {
-    font-size: 22px;
-    font-weight: 700;
-    color: white;
-    margin-bottom: 15px;
-}
-
-/* User Email */
-.user-email {
-    font-size: 16px;
-    color: #cbd5e1;
-}
-
-/* Navigation Title */
-.nav-title {
-    font-size: 32px;
-    font-weight: 700;
-    margin-top: 20px;
+.sidebar-title {
+    color: #00c6ff;
+    font-size: 38px;
+    font-weight: bold;
     margin-bottom: 20px;
-    color: #d1d5db;
 }
 
-/* Logout Button */
-.logout-btn button {
+.menu-container {
+    background: #050816;
+    padding: 20px;
+    border-radius: 15px;
+    margin-top: 20px;
+}
+
+.user-card {
+    background: #111827;
+    padding: 20px;
+    border-radius: 15px;
+    border: 1px solid #334155;
+    margin-bottom: 20px;
+}
+
+.user-name {
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.user-email {
+    color: #cbd5e1;
+    font-size: 16px;
+    margin-top: 10px;
+    word-break: break-word;
+}
+
+.nav-title {
+    color: #cbd5e1;
+    font-size: 20px;
+    font-weight: bold;
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+.stButton > button {
     width: 100%;
-    background: #0f172a !important;
-    color: white !important;
-    border-radius: 12px !important;
-    height: 50px;
-    border: 1px solid #334155 !important;
-    font-size: 18px !important;
-    font-weight: 600 !important;
+    background-color: #0f172a;
+    color: white;
+    border: 1px solid #334155;
+    padding: 12px;
+    border-radius: 10px;
+    font-size: 18px;
 }
 
-.logout-btn button:hover {
-    background: #1e293b !important;
+.stButton > button:hover {
+    background-color: #0ea5e9;
+    color: white;
 }
 
 </style>
 """, unsafe_allow_html=True)
 
-# ---------------- SIDEBAR ----------------
+# =========================================
+# SIDEBAR
+# =========================================
 with st.sidebar:
 
-    # App Title
     st.markdown(
-        '<div class="app-title">Tracker</div>',
+        '<div class="sidebar-title">💰 Finance Tracker</div>',
         unsafe_allow_html=True
     )
 
-    # Profile Card
-    st.markdown(f"""
-    <div class="profile-container">
+    # USER CARD
+    st.markdown(
+        f"""
+        <div class="user-card">
 
-        <div class="user-name">
-            👤 Manoj KS
+            <div class="user-name">
+                👤 {st.session_state.user_name}
+            </div>
+
+            <div class="user-email">
+                📧 {st.session_state.user_email}
+            </div>
+
         </div>
+        """,
+        unsafe_allow_html=True
+    )
 
-        <div class="user-email">
-            📧 manojdab10@gmail.com
-        </div>
-
-    </div>
-    """, unsafe_allow_html=True)
-
-    # Navigation Title
     st.markdown(
         '<div class="nav-title">Navigation</div>',
         unsafe_allow_html=True
     )
 
-    # Navigation Menu
     page = st.radio(
         "",
         [
@@ -128,31 +149,181 @@ with st.sidebar:
 
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # Logout Button
-    st.markdown('<div class="logout-btn">', unsafe_allow_html=True)
-    st.button("🚪 Logout")
-    st.markdown('</div>', unsafe_allow_html=True)
+    # LOGOUT
+    if st.button("🚪 Logout"):
+        st.session_state.clear()
+        st.rerun()
 
-# ---------------- MAIN PAGE ----------------
-st.title(page)
+# =========================================
+# CALCULATIONS
+# =========================================
+total_income = sum(item["amount"] for item in st.session_state.income_data)
 
+total_expense = sum(item["amount"] for item in st.session_state.expense_data)
+
+savings = total_income - total_expense
+
+# =========================================
+# DASHBOARD
+# =========================================
 if page == "Dashboard":
-    st.success("Welcome to your Finance Dashboard!")
 
+    st.title("📊 Finance Dashboard")
+
+    st.success(f"Welcome {st.session_state.user_name}")
+
+    col1, col2, col3, col4 = st.columns(4)
+
+    with col1:
+        st.metric("💰 Total Income", f"₹{total_income}")
+
+    with col2:
+        st.metric("💸 Total Expense", f"₹{total_expense}")
+
+    with col3:
+        st.metric("🏦 Savings", f"₹{savings}")
+
+    with col4:
+        st.metric("🏠 EMI", "₹0")
+
+    st.divider()
+
+    st.subheader("Expense Distribution")
+
+    if len(st.session_state.expense_data) > 0:
+
+        df = pd.DataFrame(st.session_state.expense_data)
+
+        category_totals = (
+            df.groupby("category")["amount"]
+            .sum()
+            .reset_index()
+        )
+
+        fig = px.pie(
+            category_totals,
+            names="category",
+            values="amount",
+            hole=0.5
+        )
+
+        st.plotly_chart(fig, use_container_width=True)
+
+    else:
+        st.info("No expense data available.")
+
+# =========================================
+# ADD INCOME
+# =========================================
 elif page == "Add Income":
-    st.info("Add your income here.")
 
+    st.header("💰 Add Income")
+
+    source = st.text_input("Income Source")
+
+    amount = st.number_input(
+        "Amount",
+        min_value=0
+    )
+
+    date = st.date_input("Date")
+
+    if st.button("Add Income"):
+
+        st.session_state.income_data.append({
+            "source": source,
+            "amount": amount,
+            "date": str(date)
+        })
+
+        st.success("Income Added Successfully")
+
+# =========================================
+# ADD EXPENSE
+# =========================================
 elif page == "Add Expense":
-    st.warning("Add your expenses here.")
 
+    st.header("💸 Add Expense")
+
+    category = st.selectbox(
+        "Category",
+        [
+            "Food",
+            "Transport",
+            "Shopping",
+            "Bills",
+            "Medical",
+            "Entertainment"
+        ]
+    )
+
+    amount = st.number_input(
+        "Expense Amount",
+        min_value=0
+    )
+
+    date = st.date_input("Expense Date")
+
+    if st.button("Add Expense"):
+
+        st.session_state.expense_data.append({
+            "category": category,
+            "amount": amount,
+            "date": str(date)
+        })
+
+        st.success("Expense Added Successfully")
+
+# =========================================
+# BUDGET PLANNER
+# =========================================
 elif page == "Budget Planner":
-    st.info("Plan your monthly budget.")
 
+    st.header("📋 Budget Planner")
+
+    budget = st.number_input(
+        "Enter Monthly Budget",
+        min_value=0
+    )
+
+    if st.button("Save Budget"):
+
+        st.success("Budget Saved Successfully")
+
+# =========================================
+# ANALYTICS
+# =========================================
 elif page == "Analytics":
-    st.info("View financial analytics.")
 
+    st.header("📈 Analytics")
+
+    st.info("Analytics will appear after adding financial data.")
+
+# =========================================
+# EXPENSE HISTORY
+# =========================================
 elif page == "Expense History":
-    st.info("See all previous expenses.")
 
+    st.header("🕒 Expense History")
+
+    if len(st.session_state.expense_data) > 0:
+
+        df = pd.DataFrame(st.session_state.expense_data)
+
+        st.dataframe(df)
+
+    else:
+        st.info("No expense history available.")
+
+# =========================================
+# PROFILE
+# =========================================
 elif page == "Profile":
-    st.info("User profile section.")
+
+    st.header("👤 User Profile")
+
+    st.write("### Name")
+    st.write(st.session_state.user_name)
+
+    st.write("### Email")
+    st.write(st.session_state.user_email)
