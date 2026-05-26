@@ -3,63 +3,95 @@ import pandas as pd
 import plotly.express as px
 import os
 
+# =========================
+# DASHBOARD FUNCTION
+# =========================
+def show_dashboard():
 
-def dashboard_page():
+    st.markdown("# 📊 Finance Dashboard")
 
-    st.title("📊 Finance Dashboard")
+    csv_file = "dataset/personal_finance_dataset.csv"
 
-    file_path = "dataset/personal_finance_dataset.csv"
+    # =========================
+    # CREATE FILE IF NOT EXISTS
+    # =========================
+    if not os.path.exists(csv_file):
 
-    # CHECK IF FILE EXISTS
-    if not os.path.exists(file_path):
+        empty_df = pd.DataFrame(
+            columns=["income", "expense", "category"]
+        )
+
+        empty_df.to_csv(csv_file, index=False)
+
+    # =========================
+    # READ CSV
+    # =========================
+    df = pd.read_csv(csv_file)
+
+    # =========================
+    # FIRST TIME EMPTY DASHBOARD
+    # =========================
+    if "data_initialized" not in st.session_state:
+        st.session_state.data_initialized = False
+
+    if not st.session_state.data_initialized:
+
+        total_income = 0
+        total_expense = 0
+        savings = 0
+        emi = 0
+
+        st.markdown("## 💰 Financial Overview")
+
+        col1, col2, col3, col4 = st.columns(4)
+
+        with col1:
+            st.metric("💰 Total Income", "₹0")
+
+        with col2:
+            st.metric("💸 Total Expense", "₹0")
+
+        with col3:
+            st.metric("🏦 Savings", "₹0")
+
+        with col4:
+            st.metric("🏠 EMI", "₹0")
+
+        st.divider()
 
         st.warning("No financial data available yet.")
 
         return
 
-    # READ DATA
-    df = pd.read_csv(file_path)
-
-    # HANDLE EMPTY DATASET
+    # =========================
+    # HANDLE REAL DATA
+    # =========================
     if df.empty:
 
-        st.warning("No financial data available yet.")
+        total_income = 0
+        total_expense = 0
+        savings = 0
+        emi = 0
 
-        return
+    else:
 
-    # FIX MISSING COLUMNS
-    if "income" not in df.columns:
-        df["income"] = 0
+        # Fill missing values
+        df["income"] = df["income"].fillna(0)
+        df["expense"] = df["expense"].fillna(0)
 
-    if "expense" not in df.columns:
-        df["expense"] = 0
+        total_income = df["income"].sum()
 
-    if "category" not in df.columns:
-        df["category"] = "Other"
+        total_expense = df["expense"].sum()
 
-    # CONVERT TO NUMERIC
-    df["income"] = pd.to_numeric(
-        df["income"],
-        errors="coerce"
-    ).fillna(0)
+        savings = total_income - total_expense
 
-    df["expense"] = pd.to_numeric(
-        df["expense"],
-        errors="coerce"
-    ).fillna(0)
+        emi = df[df["category"] == "EMI"]["expense"].sum()
 
-    # CALCULATIONS
-    total_income = df["income"].sum()
-
-    total_expense = df["expense"].sum()
-
-    savings = total_income - total_expense
-
-    emi_total = df[
-        df["category"] == "EMI"
-    ]["expense"].sum()
-
+    # =========================
     # METRICS
+    # =========================
+    st.markdown("## 💰 Financial Overview")
+
     col1, col2, col3, col4 = st.columns(4)
 
     with col1:
@@ -83,40 +115,47 @@ def dashboard_page():
     with col4:
         st.metric(
             "🏠 EMI",
-            f"₹{emi_total:,.0f}"
+            f"₹{emi:,.0f}"
         )
 
     st.divider()
 
+    # =========================
     # EXPENSE DISTRIBUTION
-    expense_df = df[df["expense"] > 0]
+    # =========================
+    expense_df = (
+        df.groupby("category")["expense"]
+        .sum()
+        .reset_index()
+    )
 
-    if not expense_df.empty:
+    st.subheader("Expense Distribution")
 
-        st.subheader("Expense Distribution")
+    pie_chart = px.pie(
+        expense_df,
+        values="expense",
+        names="category",
+        hole=0.5
+    )
 
-        category_expense = (
-            expense_df.groupby("category")["expense"]
-            .sum()
-            .reset_index()
-        )
+    st.plotly_chart(
+        pie_chart,
+        use_container_width=True
+    )
 
-        fig = px.pie(
-            category_expense,
-            names="category",
-            values="expense",
-            hole=0.5
-        )
+    # =========================
+    # BAR CHART
+    # =========================
+    st.subheader("Expenses By Category")
 
-        st.plotly_chart(
-            fig,
-            use_container_width=True
-        )
+    bar_chart = px.bar(
+        expense_df,
+        x="category",
+        y="expense",
+        color="category"
+    )
 
-    # RECENT TRANSACTIONS
-    st.subheader("Recent Transactions")
-
-    st.dataframe(
-        df.tail(10),
+    st.plotly_chart(
+        bar_chart,
         use_container_width=True
     )
