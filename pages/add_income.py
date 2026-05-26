@@ -5,7 +5,7 @@ import os
 # =========================
 # ADD INCOME FUNCTION
 # =========================
-def show_add_income():
+def add_income_page():
 
     st.markdown("# 💰 Add Income")
 
