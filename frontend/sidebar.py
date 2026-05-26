@@ -15,6 +15,37 @@ def sidebar_menu():
             unsafe_allow_html=True
         )
 
+        st.divider()
+
+        # USER SECTION AT TOP
+        st.markdown(
+            f"""
+            ### 👤 User
+            **{st.session_state.get('user_name', 'User')}**
+            """
+        )
+
+        st.markdown(
+            f"""
+            📧 {st.session_state.get('user_email', '')}
+            """
+        )
+
+        st.divider()
+
+        # LOGOUT BUTTON
+        if st.button(
+            "🚪 Logout",
+            use_container_width=True
+        ):
+
+            st.session_state.clear()
+
+            st.rerun()
+
+        st.divider()
+
+        # SIDEBAR MENU
         selected = option_menu(
             menu_title=None,
             options=[
@@ -65,32 +96,5 @@ def sidebar_menu():
                 }
             }
         )
-
-        st.divider()
-
-        st.markdown(
-            f"""
-            ### 👤 User
-            **{st.session_state.get('user_name', 'User')}**
-            """
-        )
-
-        st.markdown(
-            f"""
-            📧 {st.session_state.get('user_email', '')}
-            """
-        )
-
-        st.divider()
-
-        # LOGOUT BUTTON
-        if st.button(
-            "🚪 Logout",
-            use_container_width=True
-        ):
-
-            st.session_state.clear()
-
-            st.rerun()
 
     return selected
