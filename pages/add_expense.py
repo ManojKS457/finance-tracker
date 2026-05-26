@@ -5,7 +5,7 @@ import os
 # =========================
 # ADD EXPENSE FUNCTION
 # =========================
-def show_add_expense():
+def add_expense_page():
 
     st.markdown("# 💸 Add Expense")
 
