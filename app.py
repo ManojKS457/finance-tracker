@@ -1,79 +1,77 @@
 import streamlit as st
 
-from authentication.login import login_page
-from authentication.signup import signup_page
-from authentication.session_manager import initialize_session
-
-from frontend.sidebar import sidebar_menu
-
-from dashboard.dashboard_home import show_dashboard
-from dashboard.analytics_dashboard import analytics_dashboard
-
-from pages.add_income import add_income_page
-from pages.add_expense import add_expense_page
-from pages.budget_planner import budget_page
-from pages.expense_history import expense_history_page
-from pages.profile import profile_page
-
-
+# =========================
+# PAGE CONFIG
+# =========================
 st.set_page_config(
-    page_title="Finance Tracker",
+    page_title="Smart Finance Tracker",
     page_icon="💰",
     layout="wide"
 )
 
-initialize_session()
+# =========================
+# IMPORT PAGES
+# =========================
+from dashboard.dashboard_home import show_dashboard
 
-# ---------------- LOGIN PAGE ---------------- #
+from pages.add_income import show_add_income
 
-if not st.session_state["logged_in"]:
+from pages.add_expense import show_add_expense
 
-    st.title("💰 Smart Finance Tracker")
+# =========================
+# LOGIN CHECK
+# =========================
+if "logged_in" not in st.session_state:
+    st.session_state.logged_in = True
 
-    option = st.sidebar.selectbox(
-        "Select Option",
-        ["Login", "Signup"]
-    )
+if "user_name" not in st.session_state:
+    st.session_state.user_name = "Manoj KS"
 
-    if option == "Login":
-        login_page()
+# =========================
+# SIDEBAR
+# =========================
+st.sidebar.markdown("# 💰 Finance Tracker")
 
-    else:
-        signup_page()
+menu = st.sidebar.radio(
+    "Select Option",
+    [
+        "Dashboard",
+        "Add Income",
+        "Add Expense"
+    ]
+)
 
-# ---------------- MAIN DASHBOARD ---------------- #
+# =========================
+# USER INFO
+# =========================
+st.sidebar.markdown("---")
 
-else:
+st.sidebar.markdown("## 👤 User")
 
-    try:
+st.sidebar.write(st.session_state.user_name)
 
-        selected = sidebar_menu()
+# =========================
+# LOGOUT BUTTON
+# =========================
+if st.sidebar.button("🚪 Logout"):
 
-        st.success(
-            f"Welcome {st.session_state.get('user_name', 'User')}"
-        )
+    st.session_state.clear()
 
-        if selected == "Dashboard":
-            show_dashboard()
+    st.rerun()
 
-        elif selected == "Add Income":
-            add_income_page()
+# =========================
+# PAGE ROUTING
+# =========================
+if menu == "Dashboard":
 
-        elif selected == "Add Expense":
-            add_expense_page()
+    st.success(f"Welcome {st.session_state.user_name}")
 
-        elif selected == "Budget Planner":
-            budget_page()
+    show_dashboard()
 
-        elif selected == "Analytics":
-            analytics_dashboard()
+elif menu == "Add Income":
 
-        elif selected == "Expense History":
-            expense_history_page()
+    show_add_income()
 
-        elif selected == "Profile":
-            profile_page()
+elif menu == "Add Expense":
 
-    except Exception as e:
-
-        st.error(f"Dashboard Error: {e}")
+    show_add_expense()
