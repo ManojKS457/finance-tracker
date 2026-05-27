@@ -39,7 +39,7 @@ def add_expense_page():
             "category": [category]
         })
 
-        file_path = "dataset/personal_finance_dataset.csv"
+        file_path = "dataset/user_finance_data.csv"
 
         # =========================
         # CREATE FILE IF NOT EXISTS
