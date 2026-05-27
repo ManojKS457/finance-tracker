@@ -7,7 +7,7 @@ import os
 # =========================
 def add_expense_page():
 
-    st.markdown("# 💸 Add Expense")
+    st.markdown("# 💳 Add Expense")
 
     expense = st.number_input(
         "Enter Expense Amount",
@@ -15,29 +15,11 @@ def add_expense_page():
         step=100.0
     )
 
-    category = st.selectbox(
-        "Select Category",
-        [
-            "Food",
-            "Shopping",
-            "Bills",
-            "Transport",
-            "Medical",
-            "Entertainment",
-            "EMI"
-        ]
+    category = st.text_input(
+        "Expense Category"
     )
 
     if st.button("Add Expense"):
-
-        # =========================
-        # CREATE DATAFRAME
-        # =========================
-        new_data = pd.DataFrame({
-            "income": [0],
-            "expense": [expense],
-            "category": [category]
-        })
 
         file_path = "dataset/user_finance_data.csv"
 
@@ -46,22 +28,36 @@ def add_expense_page():
         # =========================
         if not os.path.exists(file_path):
 
-            new_data.to_csv(
-                file_path,
-                index=False
+            empty_df = pd.DataFrame(
+                columns=["income", "expense", "category"]
             )
 
-        else:
-
-            new_data.to_csv(
+            empty_df.to_csv(
                 file_path,
-                mode="a",
-                header=False,
                 index=False
             )
 
         # =========================
-        # ENABLE DASHBOARD DATA
+        # CREATE NEW ENTRY
+        # =========================
+        new_data = pd.DataFrame({
+            "income": [0],
+            "expense": [expense],
+            "category": [category]
+        })
+
+        # =========================
+        # SAVE TO CSV
+        # =========================
+        new_data.to_csv(
+            file_path,
+            mode="a",
+            header=False,
+            index=False
+        )
+
+        # =========================
+        # UPDATE SESSION
         # =========================
         st.session_state.data_initialized = True
 
