@@ -30,7 +30,7 @@ def add_income_page():
             "category": [source]
         })
 
-        file_path = "dataset/personal_finance_dataset.csv"
+        file_path = "dataset/user_finance_data.csv"
 
         # =========================
         # CREATE FILE IF NOT EXISTS
