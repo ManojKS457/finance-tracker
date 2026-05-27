@@ -16,15 +16,45 @@ from pages.expense_history import expense_history_page
 from pages.profile import profile_page
 
 
+# =========================================
+# PAGE CONFIG
+# =========================================
+
 st.set_page_config(
     page_title="Finance Tracker",
     page_icon="💰",
     layout="wide"
 )
 
+# =========================================
+# SESSION INITIALIZATION
+# =========================================
+
 initialize_session()
 
-# ---------------- LOGIN PAGE ---------------- #
+# =========================================
+# INITIALIZE USER DATA
+# =========================================
+
+if "income_data" not in st.session_state:
+    st.session_state["income_data"] = []
+
+if "expense_data" not in st.session_state:
+    st.session_state["expense_data"] = []
+
+if "dashboard_income" not in st.session_state:
+    st.session_state["dashboard_income"] = 0
+
+if "dashboard_expense" not in st.session_state:
+    st.session_state["dashboard_expense"] = 0
+
+if "dashboard_savings" not in st.session_state:
+    st.session_state["dashboard_savings"] = 0
+
+
+# =========================================
+# LOGIN / SIGNUP
+# =========================================
 
 if not st.session_state["logged_in"]:
 
@@ -41,7 +71,10 @@ if not st.session_state["logged_in"]:
     else:
         signup_page()
 
-# ---------------- MAIN DASHBOARD ---------------- #
+
+# =========================================
+# MAIN APPLICATION
+# =========================================
 
 else:
 
@@ -53,25 +86,60 @@ else:
             f"Welcome {st.session_state.get('user_name', 'User')}"
         )
 
+        # =========================================
+        # CALCULATE LIVE VALUES FROM USER INPUTS
+        # =========================================
+
+        total_income = sum(
+            item["amount"]
+            for item in st.session_state["income_data"]
+        )
+
+        total_expense = sum(
+            item["amount"]
+            for item in st.session_state["expense_data"]
+        )
+
+        savings = total_income - total_expense
+
+        # =========================================
+        # STORE VALUES FOR DASHBOARD
+        # =========================================
+
+        st.session_state["dashboard_income"] = total_income
+        st.session_state["dashboard_expense"] = total_expense
+        st.session_state["dashboard_savings"] = savings
+
+        # =========================================
+        # NAVIGATION
+        # =========================================
+
         if selected == "Dashboard":
+
             show_dashboard()
 
         elif selected == "Add Income":
+
             add_income_page()
 
         elif selected == "Add Expense":
+
             add_expense_page()
 
         elif selected == "Budget Planner":
+
             budget_page()
 
         elif selected == "Analytics":
+
             analytics_dashboard()
 
         elif selected == "Expense History":
+
             expense_history_page()
 
         elif selected == "Profile":
+
             profile_page()
 
     except Exception as e:
