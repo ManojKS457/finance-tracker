@@ -21,15 +21,6 @@ def add_income_page():
 
     if st.button("Add Income"):
 
-        # =========================
-        # CREATE DATAFRAME
-        # =========================
-        new_data = pd.DataFrame({
-            "income": [income],
-            "expense": [0],
-            "category": [source]
-        })
-
         file_path = "dataset/user_finance_data.csv"
 
         # =========================
@@ -37,22 +28,36 @@ def add_income_page():
         # =========================
         if not os.path.exists(file_path):
 
-            new_data.to_csv(
-                file_path,
-                index=False
+            empty_df = pd.DataFrame(
+                columns=["income", "expense", "category"]
             )
 
-        else:
-
-            new_data.to_csv(
+            empty_df.to_csv(
                 file_path,
-                mode="a",
-                header=False,
                 index=False
             )
 
         # =========================
-        # ENABLE DASHBOARD DATA
+        # CREATE NEW ENTRY
+        # =========================
+        new_data = pd.DataFrame({
+            "income": [income],
+            "expense": [0],
+            "category": [source]
+        })
+
+        # =========================
+        # SAVE TO CSV
+        # =========================
+        new_data.to_csv(
+            file_path,
+            mode="a",
+            header=False,
+            index=False
+        )
+
+        # =========================
+        # UPDATE SESSION
         # =========================
         st.session_state.data_initialized = True
 
