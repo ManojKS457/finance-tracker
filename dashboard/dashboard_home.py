@@ -41,40 +41,6 @@ def show_dashboard():
         errors="coerce"
     ).fillna(0)
 
-    # =========================
-    # FIRST TIME EMPTY DASHBOARD
-    # =========================
-    if "data_initialized" not in st.session_state:
-        st.session_state.data_initialized = False
-
-    if not st.session_state.data_initialized:
-
-        total_income = 0
-        total_expense = 0
-        savings = 0
-        emi = 0
-
-        st.markdown("## 💰 Financial Overview")
-
-        col1, col2, col3, col4 = st.columns(4)
-
-        with col1:
-            st.metric("💰 Total Income", "₹0")
-
-        with col2:
-            st.metric("💸 Total Expense", "₹0")
-
-        with col3:
-            st.metric("🏦 Savings", "₹0")
-
-        with col4:
-            st.metric("🏠 EMI", "₹0")
-
-        st.divider()
-
-        st.warning("No financial data available yet.")
-
-        return
 
     # =========================
     # HANDLE REAL DATA
